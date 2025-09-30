@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
 
-// ADVERTENCIA: Esto es inseguro, solo para pruebas
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
   port: 465,
@@ -18,6 +17,10 @@ module.exports = async (req, res) => {
 
   const { to, subject, html } = req.body;
 
+  if (!to || !subject || !html) {
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
+  }
+
   try {
     await transporter.sendMail({
       from: '"Odontología Carol" <sistema@odontologiacarol.com>',
@@ -28,6 +31,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ success: true });
   } catch (error) {
+    console.error('Error:', error);
     return res.status(500).json({ error: error.message });
   }
-}; 
+};
